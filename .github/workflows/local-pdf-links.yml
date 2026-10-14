@@ -1,0 +1,33 @@
+name: Relative PDF links verification
+on:
+  push:
+    branches: [ci/local-pdf-links]
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - run: npm run compile
+      - name: Require the precise baseline failure
+        shell: bash
+        run: |
+          set +e
+          LATEXWORKSHOP_UNIT=03_viewer/pdf-links xvfb-run -a npm test 2>&1 | tee red.log
+          status=${PIPESTATUS[0]}
+          set -e
+          test "$status" -ne 0
+          grep -F 'The relative PDF link must be clickable' red.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: relative-pdf-link-baseline
+          path: |
+            red.log
+            test/log/**/*.log
