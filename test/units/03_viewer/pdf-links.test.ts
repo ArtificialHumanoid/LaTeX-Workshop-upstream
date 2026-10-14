@@ -27,6 +27,7 @@ describe('pdf-links:', function () {
     })
 
     afterEach(async () => {
+        console.log('Navigation diagnostics:', JSON.stringify({ warnings: warning.getCalls().map(call => call.args[0] as string), panels: [...manager.getPanels(targetUri) ?? []].map(panel => ({ ready: panel['ready'], pending: panel['pendingDestination'], loaded: panel['loaded'] })) }))
         warning.restore()
         await vscode.commands.executeCommand('workbench.action.closeAllEditors')
     })

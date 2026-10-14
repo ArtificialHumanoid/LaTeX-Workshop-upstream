@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   baseline:
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -48,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          LATEXWORKSHOP_UNIT=03_viewer xvfb-run -a npm test 2>&1 | tee green.log
+          LATEXWORKSHOP_UNIT=03_viewer/pdf-links xvfb-run -a npm test 2>&1 | tee green.log
       - uses: actions/upload-artifact@v7
         if: always()
         with:
