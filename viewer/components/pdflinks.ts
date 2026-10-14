@@ -14,9 +14,6 @@ export function initPdfLinks() {
     }
     window.addEventListener('message', event => {
         const message = event.data as { type?: unknown, destination?: unknown } | undefined
-        if (message?.type === 'navigate_pdf') {
-            sendPanel({ type: 'pdf_link_error', message: 'Inner: ' + JSON.stringify({ parent: event.source === window.parent, ready, validator: typeof pdfjsLib.isValidExplicitDest }) })
-        }
         if (event.source !== window.parent || message?.type !== 'navigate_pdf' || typeof message.destination !== 'string') {
             return
         }
