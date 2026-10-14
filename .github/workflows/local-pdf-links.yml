@@ -10,6 +10,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: b14a16c
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
@@ -30,4 +32,27 @@ jobs:
           name: relative-pdf-link-baseline
           path: |
             red.log
+            test/log/**/*.log
+  patched:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - run: npm run compile
+      - run: npm run lint
+      - name: Run viewer and server regression tests
+        shell: bash
+        run: |
+          set -o pipefail
+          LATEXWORKSHOP_UNIT=03_viewer xvfb-run -a npm test 2>&1 | tee green.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: relative-pdf-link-patched
+          path: |
+            green.log
             test/log/**/*.log
